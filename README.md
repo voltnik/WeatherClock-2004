@@ -1,4 +1,5 @@
 [![voltNik YouTube](http://voltnik.ru/voltnik-banner.jpg)](https://www.youtube.com/channel/UC4s13gPVOMQVX3P1ZpdUwjA?sub_confirmation=1)
+![ПРЕВЬЮ](https://github.com/voltNik/RGB-flashlight/blob/master/clock_prev.jpg)
 # Часы с датчиком давления, температуры и адаптивной подсветкой
 * [Описание проекта](#chapter-0)
 * [Папки проекта](#chapter-1)
@@ -34,7 +35,7 @@
 
 <a id="chapter-2"></a>
 ## Схема подключения
-![СХЕМА2](https://github.com/voltNik/WeatherClock-2004/blob/master/weather-clock_bb.jpg.jpg)
+![СХЕМА2](https://github.com/voltNik/WeatherClock-2004/blob/master/weather-clock_bb.jpg)
 
 <a id="chapter-3"></a>
 ## Материалы и компоненты
