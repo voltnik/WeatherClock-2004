@@ -30,7 +30,7 @@
 <a id="chapter-1"></a>
 ## Папки
 - **libraries** - библиотеки для работы с проектом
-- **RBGflashlight** - прошивка для Arduino
+- **weather-clock** - прошивка для Arduino
 - **3d-printer** - корпус для печати на 3D принтере
 
 <a id="chapter-2"></a>
