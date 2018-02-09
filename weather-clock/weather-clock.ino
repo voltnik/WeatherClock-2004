@@ -33,14 +33,17 @@ Adafruit_BMP085 bmp;
 int bright, btn_up_val, btn_down_val, btn_set_val, now_year, now_temp; 
 float now_press;
 byte now_disp, now_month, now_date, now_hour, now_min, now_sec, now_week_day, alarm_hour, alarm_min;
-long now_millis, lcd_millis, time_millis, btn_up_millis, btn_down_millis, btn_set_millis, disp_millis;
-boolean dot, blnk, alarm, horn;
+long now_millis, lcd_millis, time_millis, btn_up_millis, btn_down_millis, btn_set_millis, disp_millis, horn_millis;
+boolean dot, blnk, alarm, horn, note;
 byte set_time;
 char sep;
 int disp[4] = {20000,4000,4000,4000}; // тайминг работы экранов
 //**************************** 
-int melody[] = { NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4 }; // мелодия
-int noteDurations[] = { 4, 8, 8, 4, 4, 4, 4, 4 };
+//int melody[] = { NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4 }; // мелодия
+//int noteDurations[] = { 4, 8, 8, 4, 4, 4, 4, 4 };
+int melody[] = { NOTE_D7, NOTE_D8, NOTE_D7, NOTE_D8, NOTE_D7, NOTE_D8, NOTE_D7, NOTE_D8 }; // мелодия
+int noteDurations[] = { 4, 4, 4, 4, 4, 4, 4, 4 };
+
 //**************************** 
 String week_day[7] = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", };
 //**************************** 
@@ -195,15 +198,6 @@ void setup()
   
   writeBigString("CLOCK", 0, 0);
   writeBigString("1.1", 5, 2);
-
-  for (int thisNote = 0; thisNote < 8; thisNote++) {
-    int noteDuration = 1000 / noteDurations[thisNote];
-    tone(BUZZER_PIN, melody[thisNote], noteDuration);
-    int pauseBetweenNotes = noteDuration * 1.30;
-    delay(pauseBetweenNotes);
-    noTone(BUZZER_PIN);
-  }
-  
   delay(1000); // дилэй
   writeBigString("     ", 0, 0);
   writeBigString("   ", 5, 2);
@@ -222,6 +216,7 @@ void loop()
   
   // обработка нажатия кнопок с защитой от дребезга
   if ((btn_up_val == LOW) & (now_millis - btn_up_millis)> BTN_PROTECT) { 
+    horn = false;
     switch (set_time) {
       case 1:
         now_hour++;
@@ -269,6 +264,7 @@ void loop()
     btn_up_millis = now_millis + 300;
   }
   if ((btn_down_val == LOW) & (now_millis - btn_down_millis)> BTN_PROTECT) { 
+    horn = false;
     switch (set_time) {
       case 1:
         now_hour--;
@@ -315,6 +311,7 @@ void loop()
     btn_down_millis = now_millis + 300;
   }
   if ((btn_set_val == LOW) & (now_millis - btn_set_millis)> BTN_PROTECT) { 
+    horn = false;
     if (now_disp!=0) {now_disp=0; lcd.clear(); }
     set_time = (set_time + 1) % 12;
     if (set_time == 11) { // выход из режима установки и запись времени
@@ -333,10 +330,24 @@ void loop()
       time_read();
     }  
     set_lcd_led();
-    if ((now_hour == alarm_hour)and(now_min == alarm_min)) { horn = true;} else { horn = false;}; // проверка будильника
+    if ((now_hour == alarm_hour)and(now_min == alarm_min)and(now_sec==0)and(alarm)) { horn = true;} // проверка будильника
+    if ((now_hour != alarm_hour)or(now_min != alarm_min)) { horn = false;};
     if (millis()>4000000000) {resetFunc();}; // проверка переполения millis и сброс раз в 46 суток. максимально возможно значение 4294967295, это около 50 суток.
     time_millis = now_millis;
   } 
+
+  if ((horn)and(now_millis - horn_millis > 250)) { // пищалка
+    if (note) {
+      noTone(BUZZER_PIN);
+      tone(BUZZER_PIN, NOTE_D8, 250); 
+    } else {
+      noTone(BUZZER_PIN);
+      tone(BUZZER_PIN, NOTE_D7, 250); 
+    }   
+    note = !note; 
+    horn_millis = now_millis;
+  }
+    
   if ((now_millis - disp_millis  > disp[now_disp])and(set_time==0)) {  // смена экрана по таймингу
     now_disp = (now_disp + 1) % 5;
     lcd.clear();
