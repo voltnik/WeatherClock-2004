@@ -9,9 +9,9 @@
 #include "tones.h" // файл нот, лежит в папке прошивки
 //****************************
 // пины кнопок управления
-#define BTN_UP 8
-#define BTN_DOWN 9
-#define BTN_SET 10
+#define BTN_UP 8  // кнопка увеличения 
+#define BTN_DOWN 9  // кнопка уменьшения
+#define BTN_SET 10 // кнопка установки
 
 // пины подключения модуля часов
 #define kCePin 5  // RST
@@ -39,15 +39,12 @@ byte set_time;
 char sep;
 int disp[4] = {20000,4000,4000,4000}; // тайминг работы экранов
 //**************************** 
-//int melody[] = { NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4 }; // мелодия
-//int noteDurations[] = { 4, 8, 8, 4, 4, 4, 4, 4 };
 int melody[] = { NOTE_D7, NOTE_D8, NOTE_D7, NOTE_D8, NOTE_D7, NOTE_D8, NOTE_D7, NOTE_D8 }; // мелодия
 int noteDurations[] = { 4, 4, 4, 4, 4, 4, 4, 4 };
-
 //**************************** 
 String week_day[7] = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun", };
 //**************************** 
-byte stolb[8][8] =  {
+byte stolb[8][8] =  {    // столбцы для графика (еще не используется)
 { B11111, B11111, B11111, B11111, B11111, B11111, B11111},
 { B00000, B11111, B11111, B11111, B11111, B11111, B11111},
 { B00000, B00000, B11111, B11111, B11111, B11111, B11111},
@@ -58,7 +55,7 @@ byte stolb[8][8] =  {
 { B00000, B00000, B00000, B00000, B00000, B00000, B00000}
 };
 // Eight programmable character definitions
-byte custom[8][8] = {
+byte custom[8][8] = {   // символы большого шрифта
 { B11111,B11111,B11111,B00000,B00000,B00000,B00000,B00000 },
 { B11100,B11110,B11111,B11111,B11111,B11111,B11111,B11111 },
 { B11111,B11111,B11111,B11111,B11111,B11111,B01111,B00111 },
@@ -75,7 +72,7 @@ byte custom[8][8] = {
 // \024 = 20 decimal (space)
 // \377 = 255 decimal (black square)
 
-const char *bigChars[][2] = { 
+const char *bigChars[][2] = {   // символы из новых букв
 {"\024\024\024", "\024\024\024"}, // Space
 {"\377", "\007"}, // !
 {"\005\005", "\024\024"}, // "
@@ -164,8 +161,7 @@ void setup()
 {
   Serial.begin(9600);
   Serial.println("Weather Clock 1.0");
-  //randomSeed(analogRead(0));  // включение случайного random
-
+  
   //кнопки управления
   pinMode(BTN_UP, INPUT_PULLUP);
   pinMode(BTN_DOWN, INPUT_PULLUP);
@@ -180,7 +176,7 @@ void setup()
   alarm_min = EEPROM.readByte(1);
   alarm = EEPROM.readByte(2);
 
-  if (!bmp.begin()) {
+  if (!bmp.begin()) {   // если не подключен барометр - часы не включатся
     Serial.println("Could not find a valid BMP085 sensor, check wiring!");
   while (1) {}
   }
@@ -188,7 +184,7 @@ void setup()
   rtc.writeProtect(false);
   rtc.halt(false);
   // первичная установка времени, если требуется
-  //Time t(2017, 2, 6, 1, 39, 50, 1);
+  //Time t(2017, 2, 6, 1, 39, 50, 1); // год-месяц-дата-час-минута-секунда-день.недели
   //rtc.time(t);
   
   lcd.init();
@@ -199,7 +195,7 @@ void setup()
   writeBigString("CLOCK", 0, 0);
   writeBigString("1.1", 5, 2);
 
-  tone(BUZZER_PIN, NOTE_D7, 100); 
+  tone(BUZZER_PIN, NOTE_D7, 100);   // разово пищим при старте. проверка зуммера
   delay(1000);
 
   writeBigString("     ", 0, 0);
@@ -207,7 +203,7 @@ void setup()
   time_read();
 }
 //****************************
-void(* resetFunc) (void) = 0;  // функция ресета
+void(* resetFunc) (void) = 0;  // функция ресета. так надо.
 //****************************
 void loop()
 {
@@ -218,7 +214,7 @@ void loop()
   btn_set_val = digitalRead(BTN_SET);
   
   // обработка нажатия кнопок с защитой от дребезга
-  if ((btn_up_val == LOW) & (now_millis - btn_up_millis)> BTN_PROTECT) { 
+  if ((btn_up_val == LOW) & (now_millis - btn_up_millis)> BTN_PROTECT) {  // обработка кнопки вверх
     horn = false;
     switch (set_time) {
       case 1:
@@ -266,7 +262,7 @@ void loop()
     
     btn_up_millis = now_millis + 300;
   }
-  if ((btn_down_val == LOW) & (now_millis - btn_down_millis)> BTN_PROTECT) { 
+  if ((btn_down_val == LOW) & (now_millis - btn_down_millis)> BTN_PROTECT) {  // обработка кнопки вниз
     horn = false;
     switch (set_time) {
       case 1:
@@ -313,7 +309,7 @@ void loop()
     }
     btn_down_millis = now_millis + 300;
   }
-  if ((btn_set_val == LOW) & (now_millis - btn_set_millis)> BTN_PROTECT) { 
+  if ((btn_set_val == LOW) & (now_millis - btn_set_millis)> BTN_PROTECT) {  // обработка кнопки установки
     horn = false;
     if (now_disp!=0) {now_disp=0; lcd.clear(); }
     set_time = (set_time + 1) % 12;
@@ -334,13 +330,13 @@ void loop()
     }  
     set_lcd_led();
     if ((now_hour == alarm_hour)and(now_min == alarm_min)and(now_sec==0)and(alarm)) { horn = true;} // проверка будильника
-    if ((now_hour != alarm_hour)or(now_min != alarm_min)) { horn = false;};
+    if ((now_hour != alarm_hour)or(now_min != alarm_min)) { horn = false;};  // отключение будильника через 1 минуту
 
     if (millis()>4000000000) {resetFunc();}; // проверка переполения millis и сброс раз в 46 суток. максимально возможно значение 4294967295, это около 50 суток.
     time_millis = now_millis;
   } 
 
-  if ((horn)and(now_millis - horn_millis > 250)) { // пищалка
+  if ((horn)and(now_millis - horn_millis > 250)) { // будильник
     if (note) {
       noTone(BUZZER_PIN);
       tone(BUZZER_PIN, NOTE_D8, 250); 
@@ -354,13 +350,12 @@ void loop()
     horn_millis = now_millis;
   }
     
-  if ((now_millis - disp_millis  > disp[now_disp])and(set_time==0)) {  // смена экрана по таймингу
+  if ((now_millis - disp_millis  > disp[now_disp])and(set_time==0)) {  // смена экранов по таймингу
     now_disp = (now_disp + 1) % 5;
     lcd.clear();
     disp_millis = now_millis;
   };
-  // обновление экрана
-  if (now_millis - lcd_millis > LCD_RENEW) {
+  if (now_millis - lcd_millis > LCD_RENEW) {  // обновление экрана
    print_lcd();
    lcd_millis = now_millis;
   } 
@@ -446,7 +441,7 @@ void writeBigString(char *str, int x, int y) { // пишем большие бу
   x += writeBigChar(c, x, y) + 1;
 }
 //****************************
-void time_read() { // читаем время из модуля и записываем значения в переменный для работы
+void time_read() { // читаем время из модуля и записываем значения в переменные для работы
   t = rtc.time();
   now_year = t.yr;
   now_month = t.mon;
