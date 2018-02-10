@@ -47,6 +47,7 @@
 - набор резисторов 600шт: http://ali.pub/28smng 
 - монтажный провод 280м: http://ali.pub/27hcky
 - черный корпус: http://ali.pub/29hz44 резерв: http://ali.pub/29hz4b
+- дешевые макетные платы 10шт: http://ali.pub/29i0fy
 Еще может пригодится:
 - маркер с флюсом: http://ali.pub/27h8tm резерв: http://ali.pub/27h8z2
 - термоклеевой пистолет http://ali.pub/27hbfq резерв: http://ali.pub/27hbiu
