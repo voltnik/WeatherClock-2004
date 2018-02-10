@@ -40,10 +40,8 @@
 ## Материалы и компоненты
 - контроллер Arduino Nano: http://ali.pub/28sn0v резерв: http://ali.pub/2351o1
 - экран LCD 2004 с модулем I2C: http://ali.pub/29hyvr
-- модуль реального времени DS1302
-- http://ali.pub/29hyw5
-- модуль барометра BMP180
-- http://ali.pub/29hywq
+- модуль реального времени DS1302: http://ali.pub/29hyw5
+- модуль барометра BMP180: http://ali.pub/29hywq
 - кнопки 25шт: http://ali.pub/28sn4y резерв: http://ali.pub/235230
 - Фоторезистор: http://ali.pub/29hyxw
 - набор резисторов 600шт: http://ali.pub/28smng 
