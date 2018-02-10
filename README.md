@@ -1,5 +1,5 @@
 [![voltNik YouTube](http://voltnik.ru/voltnik-banner.jpg)](https://www.youtube.com/channel/UC4s13gPVOMQVX3P1ZpdUwjA?sub_confirmation=1)
-![ПРЕВЬЮ](https://github.com/voltNik/WeatherClock-2004/blob/master/clock_prev.jpg)
+![ПРЕВЬЮ](https://github.com/voltNik/WeatherClock-2004/blob/master/clock_prev1.jpg)
 # Часы с датчиком давления, температуры и адаптивной подсветкой
 * [Описание проекта](#chapter-0)
 * [Папки проекта](#chapter-1)
