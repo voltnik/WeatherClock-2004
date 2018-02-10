@@ -198,7 +198,10 @@ void setup()
   
   writeBigString("CLOCK", 0, 0);
   writeBigString("1.1", 5, 2);
-  delay(1000); // дилэй
+
+  tone(BUZZER_PIN, NOTE_D7, 100); 
+  delay(1000);
+
   writeBigString("     ", 0, 0);
   writeBigString("   ", 5, 2);
   time_read();
@@ -220,11 +223,11 @@ void loop()
     switch (set_time) {
       case 1:
         now_hour++;
-        if (now_hour == 24) now_hour=0;
+        if (now_hour >= 24) now_hour=0;
         break;
       case 2:
         now_min++;
-        if (now_min == 60) now_min=0;
+        if (now_min >= 60) now_min=0;
         break;
       case 3:
         now_sec = 0;
@@ -234,30 +237,30 @@ void loop()
         break;
       case 4:
         alarm_hour++;
-        if (alarm_hour == 24) alarm_hour=0;
+        if (alarm_hour >= 24) alarm_hour=0;
         break;
       case 5:
         alarm_min++;
-        if (alarm_min == 60) alarm_min=0;
+        if (alarm_min >= 60) alarm_min=0;
         break;
       case 6:
         alarm = !alarm;
         break;
       case 7:
         now_year++;
-        if (now_year == 2100) now_year=2000;
+        if (now_year >= 2100) now_year=2000;
         break;
       case 8:
         now_month++;
-        if (now_month == 13) now_month=1;
+        if (now_month >= 13) now_month=1;
         break;
       case 9:
         now_date++;
-        if (now_date == 32) now_date=1;
+        if (now_date >= 32) now_date=1;
         break;
       case 10:
         now_week_day++;
-        if (now_week_day == 7) now_week_day=0;
+        if (now_week_day >= 7) now_week_day=0;
         break;
     }
     
@@ -332,6 +335,7 @@ void loop()
     set_lcd_led();
     if ((now_hour == alarm_hour)and(now_min == alarm_min)and(now_sec==0)and(alarm)) { horn = true;} // проверка будильника
     if ((now_hour != alarm_hour)or(now_min != alarm_min)) { horn = false;};
+
     if (millis()>4000000000) {resetFunc();}; // проверка переполения millis и сброс раз в 46 суток. максимально возможно значение 4294967295, это около 50 суток.
     time_millis = now_millis;
   } 
@@ -340,9 +344,11 @@ void loop()
     if (note) {
       noTone(BUZZER_PIN);
       tone(BUZZER_PIN, NOTE_D8, 250); 
+      analogWrite(LCD_LED, 255);
     } else {
       noTone(BUZZER_PIN);
       tone(BUZZER_PIN, NOTE_D7, 250); 
+      analogWrite(LCD_LED, 0);
     }   
     note = !note; 
     horn_millis = now_millis;
