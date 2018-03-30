@@ -37,7 +37,7 @@ long now_millis, lcd_millis, time_millis, btn_up_millis, btn_down_millis, btn_se
 boolean dot, blnk, alarm, horn, note, time_changed;
 byte set_time;
 char sep;
-int disp[4] = {20000,4000,4000,4000}; // тайминг работы экранов
+int disp[4] = {25000,3000,3000,3000}; // тайминг работы экранов
 //**************************** 
 int melody[] = { NOTE_D7, NOTE_D8, NOTE_D7, NOTE_D8, NOTE_D7, NOTE_D8, NOTE_D7, NOTE_D8 }; // мелодия
 int noteDurations[] = { 4, 4, 4, 4, 4, 4, 4, 4 };
@@ -176,11 +176,6 @@ void setup()
   alarm_min = EEPROM.readByte(1);
   alarm = EEPROM.readByte(2);
 
-  if (!bmp.begin()) {   // если не подключен барометр - часы не включатся
-    Serial.println("Could not find a valid BMP085 sensor, check wiring!");
-  while (1) {}
-  }
-
   rtc.writeProtect(false);
   rtc.halt(false);
   // первичная установка времени, если требуется
@@ -190,10 +185,19 @@ void setup()
   lcd.init();
   lcd.backlight();
   lcd.clear();
+
+  if (!bmp.begin()) {   // если не подключен барометр - часы не включатся
+    Serial.println("Could not find a valid BMP085 sensor, check wiring!");
+    lcd.print("ERROR! NO BARO!!!");
+  while (1) {}
+  }
+  
   for (int i=0; i<8; i++) lcd.createChar(i+1, custom[i]);
   
   writeBigString("CLOCK", 0, 0);
-  writeBigString("1.2", 5, 2);
+  writeBigString("1.2", 2, 2);
+  lcd.setCursor(13,3);
+  lcd.print("voltNik");
 
   tone(BUZZER_PIN, NOTE_D7, 100);   // разово пищим при старте. проверка зуммера
   delay(1000);
@@ -445,6 +449,8 @@ void print_lcd(void) { // отрисовка экрана
    break;
   case 3:
    writeBigString(temp_str, 4, 1); writeBigString("C", 13, 1);
+   lcd.setCursor(0,3);
+   lcd.print("Clock 1.2 by voltNik");
    break;
  }
 }
@@ -470,8 +476,8 @@ void time_read() { // читаем время из модуля и записы�
 //****************************
 void set_lcd_led() { // установка уровня яркости подстветки экрана
   bright = map(analogRead(FOTORES), 320, 1024, 0, 5);
-  if (bright > 3) bright = 5;
-  if (bright < 2) bright = 1;
+  //if (bright > 3) bright = 5;
+  if (bright < 1) bright = 1;
   analogWrite(LCD_LED, bright*51);
 }
 //****************************
