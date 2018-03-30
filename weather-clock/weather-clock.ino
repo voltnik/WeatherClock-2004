@@ -34,7 +34,7 @@ int bright, btn_up_val, btn_down_val, btn_set_val, now_year, now_temp;
 float now_press;
 byte now_disp, now_month, now_date, now_hour, now_min, now_sec, now_week_day, alarm_hour, alarm_min;
 long now_millis, lcd_millis, time_millis, btn_up_millis, btn_down_millis, btn_set_millis, disp_millis, horn_millis;
-boolean dot, blnk, alarm, horn, note;
+boolean dot, blnk, alarm, horn, note, time_changed;
 byte set_time;
 char sep;
 int disp[4] = {20000,4000,4000,4000}; // тайминг работы экранов
@@ -160,7 +160,7 @@ int writeBigChar(char ch, int x, int y) {
 void setup()
 {
   Serial.begin(9600);
-  Serial.println("Weather Clock 1.0");
+  Serial.println("Weather Clock 1.2");
   
   //кнопки управления
   pinMode(BTN_UP, INPUT_PULLUP);
@@ -193,7 +193,7 @@ void setup()
   for (int i=0; i<8; i++) lcd.createChar(i+1, custom[i]);
   
   writeBigString("CLOCK", 0, 0);
-  writeBigString("1.1", 5, 2);
+  writeBigString("1.2", 5, 2);
 
   tone(BUZZER_PIN, NOTE_D7, 100);   // разово пищим при старте. проверка зуммера
   delay(1000);
@@ -219,14 +219,17 @@ void loop()
     switch (set_time) {
       case 1:
         now_hour++;
+        time_changed = true;
         if (now_hour >= 24) now_hour=0;
         break;
       case 2:
         now_min++;
+        time_changed = true;
         if (now_min >= 60) now_min=0;
         break;
       case 3:
         now_sec = 0;
+        time_changed = true;
         set_time_now();
         disp_millis = now_millis;
         set_time = 0;
@@ -244,18 +247,22 @@ void loop()
         break;
       case 7:
         now_year++;
+        time_changed = true;
         if (now_year >= 2100) now_year=2000;
         break;
       case 8:
         now_month++;
+        time_changed = true;
         if (now_month >= 13) now_month=1;
         break;
       case 9:
         now_date++;
+        time_changed = true;
         if (now_date >= 32) now_date=1;
         break;
       case 10:
         now_week_day++;
+        time_changed = true;
         if (now_week_day >= 7) now_week_day=0;
         break;
     }
@@ -267,14 +274,17 @@ void loop()
     switch (set_time) {
       case 1:
         now_hour--;
+        time_changed = true;
         if (now_hour == 255) now_hour=23;
         break;
       case 2:
         now_min--;
+        time_changed = true;
         if (now_min == 255) now_min=59;
         break;
       case 3:
         now_sec = 0;
+        time_changed = true;
         set_time_now();
         disp_millis = now_millis;
         set_time = 0;
@@ -292,18 +302,22 @@ void loop()
         break;
       case 7:
         now_year--;
+        time_changed = true;
         if (now_year == 2000) now_year=2099;
         break;
       case 8:
         now_month--;
+        time_changed = true;
         if (now_month == 0) now_month=12;
         break;
       case 9:
         now_date--;
+        time_changed = true;
         if (now_date == 0) now_date=31;
         break;
       case 10:
         now_week_day--;
+        time_changed = true;
         if (now_week_day == 255) now_week_day=6;
         break;
     }
@@ -462,10 +476,15 @@ void set_lcd_led() { // установка уровня яркости подс�
 }
 //****************************
 void set_time_now() { // установка времени
-  Time tt(now_year, now_month, now_date, now_hour, now_min, now_sec, now_week_day);
-  rtc.time(tt);
+  if (time_changed) {
+    Time tt(now_year, now_month, now_date, now_hour, now_min, now_sec, now_week_day);
+    rtc.time(tt);
+  };
+  time_changed = false;
   EEPROM.writeByte(0, alarm_hour);
   EEPROM.writeByte(1, alarm_min);
   EEPROM.writeByte(2, alarm);
+  
+  
 }
 //****************************
